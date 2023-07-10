@@ -137,7 +137,6 @@
 									</div>	
 								</div>
 							</div>
-							<p style="color:white;text-align:center;">©eviarc 2017 All Rights Reserved.</p>
 						</form>
 					</div>
 				</div>
@@ -415,7 +414,7 @@
 						var subHost = hostnameParts.join(".");
 						var secondLevelDomain = subHost.split(".").pop();
 						
-						$("#userLogin").prop("href", "https://"+$('#tenantKey').val()+"."+ secondLevelDomain +"."+ topLevelDomain +"/#/login")
+						$("#userLogin").prop("href", "http://"+$('#tenantKey').val()+"."+ secondLevelDomain +"."+ topLevelDomain +"/#/login")
 					});
 				},
 				error: function(xhr, resp, text) {

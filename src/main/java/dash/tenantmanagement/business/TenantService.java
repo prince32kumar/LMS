@@ -1,16 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2016 Eviarc GmbH.
- * All rights reserved.  
- *
- * NOTICE:  All information contained herein is, and remains
- * the property of Eviarc GmbH and its suppliers, if any.  
- * The intellectual and technical concepts contained
- * herein are proprietary to Eviarc GmbH,
- * and are protected by trade secret or copyright law.
- * Dissemination of this information or reproduction of this material
- * is strictly forbidden unless prior written permission is obtained
- * from Eviarc GmbH.
- *******************************************************************************/
 package dash.tenantmanagement.business;
 
 import static dash.Constants.CREATING_SUBDOMAIN;
@@ -128,7 +115,6 @@ public class TenantService implements ITenantService {
 				TenantContext.setTenant(tenant.getTenantKey());
 				try {
 					userService.register(tenant.getRegistration());
-					createInitialUsers();
 				} catch (EmailAlreadyExistsException | RegisterFailedException | NotFoundException
 						| IllegalArgumentException | ConsistencyFailedException e) {
 					e.printStackTrace();
@@ -141,21 +127,6 @@ public class TenantService implements ITenantService {
 		t.join();
 
 		return tenant;
-	}
-
-	public void createInitialUsers() throws NotFoundException, IllegalArgumentException, ConsistencyFailedException {
-		User superadmin = new User();
-		superadmin.setEmail("superadmin@eviarc.com");
-		superadmin.setUsername("superadmin@eviarc.com");
-		superadmin.setFirstname("Superadmin");
-		superadmin.setLastname("Eviarc");
-
-		superadmin.setPassword("$2a$10$9081wfaRFVSikb09ZawwpOeDZfdFoL77pXoH7DXZvH618p/5h/J1W");
-		superadmin.setRole(Role.SUPERADMIN);
-		superadmin.setEnabled(true);
-		superadmin.setLanguage(Language.EN);
-		superadmin.setDefaultVat(19.00);
-		userService.save(superadmin);
 	}
 
 	public void createSchema(final Tenant tenant) {

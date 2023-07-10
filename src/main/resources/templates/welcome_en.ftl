@@ -52,14 +52,14 @@
         Welcome to lead+! 
         <br/>
         <br/>
-        My name is Andreas, I'm one of the co-founders of lead+.
+        My name is Max, I'm one of the co-founders of lead+.
         We are looking forward to add value to your daily Sales Process.
         <br/>
         Here is some important information about your new account. You should save this email, so you can refer to it later. 
         </p>
         
         <div class="information">
-            <h4>Your lead+ entry point <a href="https://${tenant}.leadplus.io">https://${tenant}.leadplus.io</a></h4>
+            <h4>Your lead+ entry point <a href="http://${tenant}.leadplus.localhost:8080">http://${tenant}.leadplus.localhost:8080</a></h4>
             <h4>Login with your username ${user.email}</h4>
         </div>
 
@@ -75,26 +75,13 @@
         <br/>
         Cheers,
         <br/>
-        Andreas
+        Max
         <br/>
         <br/>
-		<img src="cid:employee" alt="Andreas Foitzik"/>
+		<img src="cid:employee" alt="Max Mustermann"/>
         <br/>
         <br/>
-        <div class="footer">
-            Andreas Foitzik 
-            <br/>
-            CEO
-            <br/>
-            <br/>
-            <a href="http://leadplus.io">www.leadplus.io</a> <br/>
-            eviarc UG (limited) i.G. <br/>
-            Hauptstrasse 55 <br/>
-            76133 Karlsruhe <br/>
-            Germany <br/>
-            <br/>
-            +49 123 456 789 00
-        </div>
+
 	</div>
 	
 </body>

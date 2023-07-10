@@ -1,16 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2016 Eviarc GmbH.
- * All rights reserved.  
- *
- * NOTICE:  All information contained herein is, and remains
- * the property of Eviarc GmbH and its suppliers, if any.  
- * The intellectual and technical concepts contained
- * herein are proprietary to Eviarc GmbH,
- * and are protected by trade secret or copyright law.
- * Dissemination of this information or reproduction of this material
- * is strictly forbidden unless prior written permission is obtained
- * from Eviarc GmbH.
- *******************************************************************************/
 
 package dash.usermanagement.business;
 
@@ -92,8 +79,7 @@ public class UserService extends ConsistencyService {
 	}
 
 	public List<User> getAll() {
-		return userRepository.findAll().stream().filter(it -> !"superadmin@eviarc.com".equals(it.getUsername()))
-				.collect(Collectors.toList());
+		return userRepository.findAll();
 	}
 
 	public User getById(final long id) throws NotFoundException {
@@ -356,7 +342,8 @@ public class UserService extends ConsistencyService {
 				user.setEnabled(enabled);
 				user.setLanguage(registration.getLanguage());
 				user.setDefaultVat(19.00);
-				notify(user);
+				//TODO Activate for mail welcome message with aws
+				//notify(user);
 				return save(user);
 			} catch (SaveFailedException ex) {
 				logger.error(ex.getMessage() + UserService.class.getSimpleName(), ex);
@@ -399,7 +386,7 @@ public class UserService extends ConsistencyService {
 		AbstractMessage welcomeMessage;
 		try {
 			welcomeMessage = this.messageService.getWelcomeMessage(templateName, tenant, user);
-			this.awsEmailService.sendMail("andreas.foitzik@leadplus.io", welcomeMessage.getRecipients(),
+			this.awsEmailService.sendMail("Max.Mustermann@leadplus.io", welcomeMessage.getRecipients(),
 					welcomeMessage.getSubject(), welcomeMessage.getContent());
 		} catch (Exception e) {
 			e.printStackTrace();

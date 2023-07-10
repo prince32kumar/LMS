@@ -1,16 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2016 Eviarc GmbH.
- * All rights reserved.  
- *
- * NOTICE:  All information contained herein is, and remains
- * the property of Eviarc GmbH and its suppliers, if any.  
- * The intellectual and technical concepts contained
- * herein are proprietary to Eviarc GmbH,
- * and are protected by trade secret or copyright law.
- * Dissemination of this information or reproduction of this material
- * is strictly forbidden unless prior written permission is obtained
- * from Eviarc GmbH.
- *******************************************************************************/
 package dash.tenantmanagement.rest.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +36,7 @@ public class TenantIntegrationTest extends BaseConfig {
 
 	public Tenant createTenant() {
 		Tenant tenant = new Tenant();
-		tenant.setTenantKey("eviarc");
+		tenant.setTenantKey("testdemo");
 		tenant.setAddress("Karlsruhe");
 		tenant.setDescription("Tenant for JUnit Tests");
 		tenant.setLicense(createLicense());
