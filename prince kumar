@@ -1,9 +1,9 @@
 stages:
-  - Changeset
+  - pre
 
 
-Changeset:
-  stage: Changeset
+.Changeset:
+    stage: Pre
   image: bitnami/git:latest
   script:
     - mkdir -p Target
