@@ -1,0 +1,50 @@
+stages:
+  - Changeset
+
+
+Changeset:
+  stage: Changeset
+  image: bitnami/git:latest
+  script:
+    - mkdir -p Target
+    - echo $CI_COMMIT_TAG
+    # Modified files
+    - |
+      if [[ $CI_COMMIT_TAG == Prod_* ]];
+      then 
+        CI_PREVIOUS_COMMIT=$CI_PREVIOUS_COMMIT_PROD
+      fi
+      if [[ $CI_COMMIT_TAG == SIT_* ]];
+      then 
+        CI_PREVIOUS_COMMIT=$CI_PREVIOUS_COMMIT_SIT
+      fi
+      if [[ $CI_COMMIT_TAG == UAT_* ]];
+      then 
+        CI_PREVIOUS_COMMIT=$CI_PREVIOUS_COMMIT_UAT
+      fi  
+    - echo $CI_PREVIOUS_COMMIT
+    - echo $CI_PREVIOUS_COMMIT_PROD
+    - echo $CI_PREVIOUS_COMMIT_SIT
+    - echo $CI_PREVIOUS_COMMIT_UAT   
+    - mfiles=$(git diff $CI_PREVIOUS_COMMIT HEAD --name-only --diff-filter=d)
+    - echo $mfiles
+    - |
+      if [ ! -z "$mfiles" ];
+      then
+        echo "$mfiles" | while IFS= read -r line ; do echo $line; cp -rf --parents "$line" Target; done
+        # cp -rv --parents "$mfiles" Target;
+      else
+        echo "No modified files";
+      fi
+    # If there are no modified files files
+    - if [[ -z $mfiles ]];
+      then
+        echo "NO changes found";
+        exit 1;
+      fi
+  artifacts:
+    paths:
+      - "Target"
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^UAT_.*/
