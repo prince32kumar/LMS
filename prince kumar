@@ -1,14 +1,22 @@
 stages:
-  - pre
+  - changeset
+  - build
+  - sast
+  - dependency
+include:
+ - template: Security/SAST.gitlab-ci.yml
+ - template: Security/Dependency-Scanning.gitlab-ci.yml
 
-
-.Changeset:
-    stage: Pre
+Changeset:
+  stage: changeset
+  tags:
+    - Docker
   image: bitnami/git:latest
   script:
+    - mkdir /builds/balic/baliclms/
     - mkdir -p Target
     - echo $CI_COMMIT_TAG
-    # Modified files
+   # Modified files
     - |
       if [[ $CI_COMMIT_TAG == Prod_* ]];
       then 
@@ -44,18 +52,59 @@ stages:
       fi
   artifacts:
     paths:
-      - "Target"
+      
+      - "/builds/balic/baliclms/"
     expire_in: 1 week
   rules:
+    - if: $CI_COMMIT_TAG =~ /^UAT_.*/
     - if: $CI_COMMIT_TAG =~ /^SIT_.*/
-
-if [[ -d "Target/Unix_Structure" ]]; then
-   echo "Changes found to build"
+    - if: $CI_COMMIT_TAG =~ /^PROD_.*/
+    # - if [[ -d "Target/Unix_Structure" ]]; then
+    #    echo "Changes found to build"
 
    
 
-else
+    #   else
 
-   echo "No changes to build"
+    #       echo "No changes to build"
 
-fi
+    #    fi
+      
+   
+
+    
+build:
+  stage: build
+  image: 'maven:latest'
+  tags:
+    - Docker
+  script:
+    - whoami
+    - mvn -f BalicLms/pom.xml clean install package
+  only:
+   changes:
+     - BalicLms/src/**
+
+  artifacts:
+    paths:
+      - /builds/balic/baliclms/BalicLms/target/*.war
+sast:
+  stage: sast
+  tags:
+    - Docker
+  script: mkdir /builds/balic/baliclms/secure.txt
+  artifacts:
+    paths:
+      - gl-sast-report.json
+      - /builds/balic/baliclms/secure.txt
+    reports:
+      sast: gl-sast report.json
+dependency_scanning:
+  stage: dependency
+  tags:
+    - Docker
+  artifacts:
+    paths:
+      - gl-dependency-scanning-report.json
+    reports:
+      dependency_scanning: gl-dependency-scanning-report.json
