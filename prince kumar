@@ -47,16 +47,10 @@ stages:
       - "Target"
     expire_in: 1 week
   rules:
-    - if: $CI_COMMIT_TAG =~ /^UAT_.*/
+    - if: $CI_COMMIT_TAG =~ /^SIT_.*/
 
 
-if [[ -d "Target/Unix_Structure" ]]; then
-   echo "Changes found to build"
-
-   
-
-else
-
-   echo "No changes to build"
-
-fi
+NO changes found
+Cleaning up project directory and file based variables
+00:01
+ERROR: Job failed: exit code 1
