@@ -1,3 +1,18 @@
-Pulling docker image registry.gitlab.com/security-products/gemnasium-maven:4 ...
-WARNING: Failed to pull image with policy "always": write /var/lib/docker/tmp/GetImageBlob896389425: no space left on device (manager.go:237:6s)
-ERROR: Job failed: failed to pull image "registry.gitlab.com/security-products/gemnasium-maven:4" with specified policies [always]: write /var/lib/docker/tmp/GetImageBlob896389425: no space left on device (manager.go:237:6s)
+stages:
+  - test
+
+sast:
+  stage: test
+  image: 'docker:latest' # You can choose an appropriate image based on your project requirements
+  variables:
+    SPOTBUGS_REPORT_PATH: "spotbugs-report.html" # Customize the report name as desired
+  script:
+    - apt-get update -qy
+    - apt-get install -y curl
+    - curl -LJO https://gitlab.com/gitlab-org/security-products/analyzers/spotbugs/-/jobs/artifacts/master/raw/spotbugs.gitlab-ci.yml
+  artifacts:
+    paths:
+      - gl-sast-report.json # This will save the SAST report as an artifact
+      - spotbugs-report.html # This will save the spotbugs report as an artifact
+  only:
+    - merge_requests # Run SAST only for merge requests
