@@ -1,0 +1,3 @@
+Pulling docker image registry.gitlab.com/security-products/gemnasium-maven:4 ...
+WARNING: Failed to pull image with policy "always": write /var/lib/docker/tmp/GetImageBlob896389425: no space left on device (manager.go:237:6s)
+ERROR: Job failed: failed to pull image "registry.gitlab.com/security-products/gemnasium-maven:4" with specified policies [always]: write /var/lib/docker/tmp/GetImageBlob896389425: no space left on device (manager.go:237:6s)
