@@ -45,3 +45,4 @@ Changeset:
     expire_in: 1 week
   rules:
     - if: $CI_COMMIT_TAG =~ /^UAT_.*/
+- template: Jobs/Code-Quality.gitlab-ci.yml
