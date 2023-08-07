@@ -1,4 +1,26 @@
 
+include:
+   - template: Jobs/Code-Quality.gitlab-ci.yml  
+code_quality:
+  stage: Code_Quality
+  # image: gitlab-org/ci-cd/codequality:0.85.29
+  tags: [shell107]
+  before_script:
+    - whoami
+  artifacts:
+    paths: [gl-code-quality-report.json]
+
+
+
+
+
+
+
+
+
+
+
+
 code_quality:
   stage: test
   tags:
