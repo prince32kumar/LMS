@@ -1,3 +1,29 @@
+
+code_quality:
+  stage: test
+  tags:
+    - Docker
+  services:  
+  variables:
+    CODE_QUALITY_IMAGE: registry.gitlab.com/gitlab-org/ci-cd/codequality:0.85.23
+
+ 
+
+code_quality_html:
+  extends: code_quality
+  variables:
+    REPORT_FORMAT: html
+  artifacts:
+      paths: [gl-code-quality-report.html]
+
+
+
+
+
+
+
+
+
 stages:
   - changeset
   - Code-Quality
