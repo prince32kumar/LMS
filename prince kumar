@@ -1,5 +1,140 @@
-.CommitUpdate:
-    stage: Post
+stages:
+  - changeset
+  - Code-Quality
+  - build
+  - sast
+  - dependency
+  - CommitUpdate
+include:
+ - template: Code-Quality.gitlab-ci.yml
+ - template: Security/SAST.gitlab-ci.yml
+ - template: Security/Dependency-Scanning.gitlab-ci.yml
+ 
+
+ #''
+
+Code-Quality:
+  stage: Code_Quality
+  before_script:
+    - whoami
+  tags:
+    - Docker_1
+  artifacts:
+    paths:
+      - gl-Code-Quality-report.json
+    reports:
+      codequality: gl-Code-Quality-report.json
+
+    
+
+Changeset:
+  stage: changeset
+  tags:
+    - Docker
+  image: bitnami/git:latest
+  script:
+    # - mkdir /builds/balic/baliclms/changeset
+    - mkdir -p Target
+    - echo $CI_COMMIT_TAG
+   # Modified files
+    - |
+      if [[ $CI_COMMIT_TAG == Prod_* ]];
+      then 
+        CI_PREVIOUS_COMMIT=$CI_PREVIOUS_COMMIT_PROD
+      fi
+      if [[ $CI_COMMIT_TAG == SIT_* ]];
+      then 
+        CI_PREVIOUS_COMMIT=$CI_PREVIOUS_COMMIT_SIT
+      fi
+      if [[ $CI_COMMIT_TAG == UAT_* ]];
+      then 
+        CI_PREVIOUS_COMMIT=$CI_PREVIOUS_COMMIT_UAT
+      fi  
+    - echo $CI_PREVIOUS_COMMIT
+    - echo $CI_PREVIOUS_COMMIT_PROD
+    - echo $CI_PREVIOUS_COMMIT_SIT
+    - echo $CI_PREVIOUS_COMMIT_UAT   
+    - mfiles=$(git diff $CI_PREVIOUS_COMMIT HEAD --name-only --diff-filter=d)
+    - echo $mfiles
+    - |
+      if [ ! -z "$mfiles" ];
+      then
+        echo "$mfiles" | while IFS= read -r line ; do echo $line; cp -rf --parents "$line" Target; done
+        # cp -rv --parents "$mfiles" Target;
+      else
+        echo "No modified files";
+      fi
+    # If there are no modified files files
+    - if [[ -z $mfiles ]];
+      then
+        echo "NO changes found";
+        exit 1;
+      fi
+  artifacts:
+    paths:
+      - "Target/*"
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^UAT_.*/
+    - if: $CI_COMMIT_TAG =~ /^SIT_.*/
+    - if: $CI_COMMIT_TAG =~ /^PROD_.*/
+    
+    
+Backend_build:
+  stage: build
+  image: 'maven:latest'
+  dependencies:
+    - "Changeset"
+  tags:
+    - Docker
+  script:
+    - | 
+      if [[ -d "Target/BalicLms" ]]; then
+         echo "Changes found to build"
+         mvn -f BalicLms/pom.xml clean install package  
+      else
+         echo "No changes to build"
+      fi
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^UAT_.*/
+    - if: $CI_COMMIT_TAG =~ /^SIT_.*/
+    - if: $CI_COMMIT_TAG =~ /^PROD_.*/
+  artifacts:
+    paths:
+      - BalicLms/target/*.war
+
+
+sast:
+  stage: sast
+  tags:
+    - Docker_1
+  artifacts:
+    paths:
+      - gl-sast-report.json
+    # reports:
+    #   sast: gl-sast report.json
+       
+
+
+dependency_scanning:
+  stage: dependency
+  tags:
+    - Docker_1
+  # rules:
+  #   - if: $CI_COMMIT_TAG =~ /^UAT_.*/
+  #   - if: $CI_COMMIT_TAG =~ /^SIT_.*/
+  #   - if: $CI_COMMIT_TAG =~ /^PROD_.*/
+  artifacts:
+    paths:
+      - gl-dependency-scanning-report.json
+    reports:
+      dependency_scanning: gl-dependency-scanning-report.json
+
+
+CommitUpdate:
+    stage: CommitUpdate
+    tags:
+      - Docker_1
     script:
         - CI_PREVIOUS_COMMIT=$(git rev-parse HEAD)
         - |
@@ -14,35 +149,31 @@
             if [[ $CI_COMMIT_TAG == UAT_* ]];
             then
              curl -k --request PUT --header "PRIVATE-TOKEN: $TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/variables/CI_PREVIOUS_COMMIT_UAT" --form "value=$CI_PREVIOUS_COMMIT"
-            fi     
-        #- 'curl -k --request PUT --header "PRIVATE-TOKEN: $TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/variables/CI_PREVIOUS_COMMIT" --form "value=$CI_PREVIOUS_COMMIT"'
-        #- 'curl -k --capath /home/ec2-user --cacert wild.in-2048.cer --request PUT --header "PRIVATE-TOKEN: $TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/variables/CI_PREVIOUS_COMMIT" --form "value=$CI_PREVIOUS_COMMIT"'
+            fi  
+ This GitLab CI configuration is invalid: jobs code-quality config should implement a script: or a trigger: keyword.
 
 
-
-
-
-
-
-include:
+.include:
     - project: 'templates/template'
       ref: Changeset
       file: 'Changeset.yml'
 
 
-
-Changeset:
+.Changeset:
   stage: Pre
-  extends: .Changeset
+  extends: Changeset
   tags:
-      - docker3
+      - Docker_1
   before_script:
     - echo $CI_COMMIT_SHA
   image: docker.io/bitnami/git:latest
   artifacts:
     paths:
-      - Target/*
+      - Target
     expire_in: 1 week
   rules:
     - if: $CI_COMMIT_TAG =~ /^UAT_.*/
-- template: Jobs/Code-Quality.gitlab-ci.yml
+
+  
+
+
