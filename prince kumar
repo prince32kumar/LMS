@@ -13,7 +13,10 @@ Code-Quality:
       codequality: gl-Code-Quality-report.json
 
 
-
+script:
+    - mvn checkstyle:checkstyle pmd:check findbugs:check
+  dependencies:
+    - build
 
 
 
