@@ -1,5 +1,21 @@
 
 
+
+stages:
+  - code_quality
+
+code_quality:
+  image: maven:3-jdk-11
+  script:
+    - echo "Running code quality checks..."
+    - mvn clean checkstyle:check
+
+
+
+
+
+
+
 Code-Quality:
   stage: Code_Quality
   before_script:
