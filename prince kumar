@@ -9,7 +9,13 @@ code_quality:
   script:
     - echo "Running code quality checks..."
     - mvn clean checkstyle:check
+include:
+  - template: Code-Quality.gitlab-ci.yml
 
+code_quality:
+  stage: test
+  artifacts:
+    paths: [gl-code-quality-report.json]
 
 
 
