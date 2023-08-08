@@ -1,0 +1,5 @@
+WARNING: gl-code-quality-report.json: no matching files. Ensure that the artifact path is relative to the working directory (/home/gitlab-runner/builds/59r45dVPh/0/balic/baliclms) 
+ERROR: No files to upload                          
+Cleaning up project directory and file based variables
+00:00
+ERROR: Job failed: exit status 1
